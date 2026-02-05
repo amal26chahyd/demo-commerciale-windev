@@ -1,0 +1,115 @@
+import os
+import re
+from pathlib import Path
+
+# Chemins principaux
+ROOT = Path(__file__).resolve().parents[1]
+PROMPT_FILE = ROOT / "docs" / "PROMPT.md"
+AI_DIR = ROOT / "docs" / "ai"
+OUT_DIR = ROOT / "docs" / "generated"
+
+OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+def read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8", errors="ignore")
+
+def extract_useful(content: str) -> str:
+    """
+    Extraction minimale et robuste depuis les fichiers WinDev :
+    - noms (name :)
+    - blocs WLangage (code : |)
+    On ignore volontairement internal_properties (encodé).
+    """
+    names = re.findall(r"^\s*name\s*:\s*(.+)$", content, flags=re.MULTILINE)
+
+    code_blocks = re.findall(
+        r"code\s*:\s*\|[0-9+-]*\n(.*?)(?=\n\s*(type\s*:|enabled\s*:|name\s*:|identifier\s*:|internal_properties\s*:|$))",
+        content,
+        flags=re.DOTALL
+    )
+
+    # Nettoyage + limites pour éviter des prompts trop gros
+    names = list(dict.fromkeys([n.strip() for n in names]))[:200]
+
+    cleaned_blocks = []
+    for b in code_blocks:
+        block = b[0].strip()
+        if block:
+            cleaned_blocks.append(block)
+    cleaned_blocks = cleaned_blocks[:80]
+
+    parts = []
+    if names:
+        parts.append("## NOMS DÉTECTÉS\n" + "\n".join(f"- {n}" for n in names))
+    if cleaned_blocks:
+        parts.append("## BLOCS WLANGAGE\n" + "\n\n---\n\n".join(cleaned_blocks))
+
+    return "\n\n".join(parts)
+
+def build_corpus() -> str:
+    sections = []
+    for p in sorted(AI_DIR.glob("*")):
+        if p.suffix.lower() not in [".bkw", ".bke", ".tkp", ".txt", ".wdp", ".wdr", ".wdw", ".wde", ".wdg"]:
+            continue
+        raw = read_text(p)
+        useful = extract_useful(raw)
+        sections.append(f"# FILE: {p.name}\n{useful}\n")
+    return "\n\n".join(sections)
+
+def call_llm(prompt: str) -> str:
+    """
+    - Sans OPENAI_API_KEY -> dry-run (test)
+    - Avec OPENAI_API_KEY -> génération réelle
+    """
+    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not api_key:
+        return (
+            "⚠️ MODE DRY-RUN (pas de clé OPENAI_API_KEY)\n\n"
+            f"Taille du prompt: {len(prompt)} caractères.\n"
+            "Ajoute la clé API pour générer la documentation réelle.\n"
+        )
+
+    from openai import OpenAI
+    client = OpenAI(api_key=api_key)
+
+    model = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
+
+    resp = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "system", "content": "Tu génères une documentation logicielle claire en Markdown."},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.2,
+    )
+    return resp.choices[0].message.content
+
+def write_file(filename: str, content: str):
+    (OUT_DIR / filename).write_text(content, encoding="utf-8")
+
+def main():
+    if not PROMPT_FILE.exists():
+        raise FileNotFoundError(f"Fichier manquant: {PROMPT_FILE}")
+
+    rules = read_text(PROMPT_FILE)
+    corpus = build_corpus()
+
+    tasks = {
+        "project_overview.md": "Génère une vue d'ensemble du projet (modules, navigation, logique globale).",
+        "screens.md": "Décris les écrans et volets (objectif, champs principaux, boutons, actions utilisateur).",
+        "reports.md": "Décris les états (reports) : contenu, usage, déclenchement.",
+    }
+
+    for out_name, task in tasks.items():
+        full_prompt = (
+            f"{rules}\n\n"
+            f"## TÂCHE\n{task}\n\n"
+            f"## DONNÉES (EXTRAITS)\n{corpus}\n\n"
+            f"## FORMAT ATTENDU\n- Markdown\n- Sections claires\n- Orienté fonctionnel\n"
+        )
+        result = call_llm(full_prompt)
+        write_file(out_name, result)
+        print(f"✅ Généré: docs/generated/{out_name}")
+
+if __name__ == "__main__":
+    main()
