@@ -1,0 +1,16 @@
+;PCSoft - Hyper File V7.00 - REP V7.00
+;Do not edit. Please use specific tools.
+ANALYSISGUID=4	;Analysis GUID
+LOCALIZATION_UTF8=96ABC0DDA129461DBC5007ACA0E6A013	Commande	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\commande.FIC
+LOCALIZATION_UTF8=60A08BE17C6546FF9DE8878AE8CB1496	LigneCde	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\lignecde.FIC
+LOCALIZATION_UTF8=C81D330F45E04B3395011EDF5B03F4E5	Facture	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\Facture.FIC
+LOCALIZATION_UTF8=C970F89D600E4593A7E44707DF12BA15	NumCommande	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\NumCommande.FIC
+LOCALIZATION_UTF8=DB85176795924F34A38D3A41D09B83F2	NumFacture	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\NumFacture.FIC
+LOCALIZATION_UTF8=B3B8F5266E034C99B3D51FECC9BD88E9	AdresseArchive	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\AdresseArchive.FIC
+LOCALIZATION_UTF8=E36E030639BB4E74B46D1313417F1968	DéclinaisonProduit	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\DéclinaisonProduit.FIC
+LOCALIZATION_UTF8=D75B40DEC06E49E5ABAD35EDC2647A4A	Client	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\client.FIC
+LOCALIZATION_UTF8=8B65D8B7D0834E8791F2A47E9ABD2659	Adresse	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\Adresse.FIC
+LOCALIZATION_UTF8=5025F756324441F5822BFE61A2910C1B	Produit	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\Produit.FIC
+LOCALIZATION_UTF8=E10AFAECCB4C4D3F8AB1B46F8FC6767F	FamilleProduit	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\FamilleProduit.FIC
+LOCALIZATION_UTF8=5F5E3FD855B847858FB7C697A09D059B	TauxTaxe	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\TauxTaxe.FIC
+LOCALIZATION_UTF8=00A4509E62FF4BB48E402A88C9C0D873	EnsembleCaractéristique	C:\Mes Projets\Mes Exemples\WD Gestion Commerciale\Exe\EnsembleCaractéristique.fic
